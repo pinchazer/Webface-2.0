@@ -1,0 +1,53 @@
+{% extends 'base_datamodels.html' %}
+
+{%block title %}
+    Flask App
+{% endblock %}
+
+
+{%block mainhead %}
+    Van Gogher
+{% endblock %}
+
+
+{%block maintext %}
+    Give me an URL of any picture and I will draw it in Van Gog style. I't better to have square picture.
+{% endblock %}
+
+{% block back %}
+    <a class="p-2 text-dark" href="{{url_for('index')}}">Main</a>
+{% endblock %}
+
+{% block author %}
+    <a class="p-2 text-dark" href="{{url_for('author')}}">About author</a>
+{% endblock %}
+
+{%block content %}
+    <div class="container">
+        <form method="post">
+            {{ form.csrf_token }}
+            <div class="row justify-content-center">
+                <div class="col-6">
+                    {{form.urlfld()}}
+                    {% if form.urlfld.errors %}
+                        <small class="form-text text-muted">
+                            {{''.join(form.urlfld.errors)}}
+                        </small>
+                    {% endif %}
+                </div>
+                <div class="col-1">
+                      <button type="submit" name="check" class="btn btn-primary ">OK</button>
+                </div>
+            </div>
+                <div class="row justify-content-center p-4 m-4">
+                    <img src="{{ url_for('.show_image', generated=image) }}" alt="GENERATED_IMAGE">
+                </div>
+                <div class="row justify-content-center p-4 m-4">
+                    {{answer}}
+                    <!--{{ url_for('.show_image', generated=image) }}-->
+                </div>
+        </form>
+    </div>
+
+
+{% endblock %}

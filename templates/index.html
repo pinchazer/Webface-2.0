@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block author %}
+  <!--<a class="p-2 text-dark" href="{{url_for('author')}}">About author</a>-->
+{% endblock %}
+
+{%block title %}
+    Flask App
+{% endblock %}
+
+{%block mainhead %}
+    Web Interface
+{% endblock %}
+
+{%block maintext %}
+    <p class="lead">
+      Simple web interface for my demo project.
+      Choose one of four datascience models and play with it. Also check my github.
+    </p>
+{% endblock %}
+
+{%block content %}
+<div class="container">
+  <div class="card-deck mb-3 text-center">
+    <div class="card mb-2 shadow-sm">
+      <div class="card-header">
+        <h4 class="my-0 font-weight-normal"></h4>
+      </div>
+      <div class="card-body">
+        <h1 class="card-title pricing-card-title pt-4">Iris</h1>
+        <ul class="list-unstyled mt-3 mb-4 pt-4">
+            <li>Iris-setosa</li>
+            <li>Iris-virginica</li>
+            <li>Iris-versicolor</li>
+        </ul>
+        <form action={{url_for('iris.index')}}>
+          <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Take a look</button>
+        </form>
+      </div>
+    </div>
+    <div class="card mb-2 shadow-sm">
+      <div class="card-header">
+        <h4 class="my-0 font-weight-normal"></h4>
+      </div>
+      <div class="card-body">
+        <h1 class="card-title pricing-card-title">Text recognition<small class="text-muted"></small></h1>
+        <ul class="list-unstyled mt-3 mb-4">
+          <li>Type some text</li>
+          <li>And get result</li>
+          <li>English language</li>
+        </ul>
+        <form action={{url_for('text.index')}}>
+          <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Get started</button>
+        </form>
+      </div>
+    </div>
+    <div class="card mb-2 shadow-sm">
+      <div class="card-header">
+        <h4 class="my-0 font-weight-normal"></h4>
+      </div>
+      <div class="card-body">
+        <h1 class="card-title pricing-card-title">Computer vision<small class="text-muted"></small></h1>
+        <ul class="list-unstyled mt-3 mb-4">
+          <li>Logistic Regression</li>
+          <li>Draw a digit</li>
+          <li>And get result</li>
+        </ul>
+        <form action={{url_for('numbers.index')}}>
+          <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Try this</button>
+        </form>
+      </div>
+    </div>
+    <div class="card mb-2 shadow-sm">
+      <div class="card-header">
+        <h4 class="my-0 font-weight-normal"></h4>
+      </div>
+      <div class="card-body">
+        <h1 class="card-title pricing-card-title">Style transfer<small class="text-muted"></small></h1>
+        <ul class="list-unstyled mt-3 mb-4">
+          <li>Cycle-GAN model</li>
+          <li>Provide a link to JPEG</li>
+          <li>And see the result</li>
+        </ul>
+        <form action={{url_for('gan.index')}}>
+          <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Enter</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="col text-center">
+    <a class="btn btn-lg btn-outline-info" href="{{url_for('author')}}">About author</a>
+</div>
+{% endblock %}
