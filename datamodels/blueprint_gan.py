@@ -6,8 +6,9 @@ import requests
 from requests.exceptions import ConnectionError, ConnectTimeout
 from PIL import Image, UnidentifiedImageError
 import base64
-from flask import Markup
 from io import BytesIO
+from config import Configuration as conf
+
 
 gan = Blueprint('gan', __name__, template_folder='templates', static_folder='static')
 
@@ -51,7 +52,7 @@ def index():
                 img_str_b = base64.b64encode(_b.getvalue())
                 _b.close()
                 img_str = img_str_b.decode('ascii')
-                r = requests.post('http://localhost:8501/v1/models/cyclegan:predict',
+                r = requests.post('http://{}:8501/v1/models/cyclegan:predict'.format(conf.SERVER_ADDRESS),
                                   json={"instances": [{"image": {"b64": img_str}}]})
                 new_image = r.json()['predictions'][0]
             except UnidentifiedImageError:
