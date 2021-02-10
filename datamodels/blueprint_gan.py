@@ -8,8 +8,11 @@ from PIL import Image, UnidentifiedImageError
 import base64
 from io import BytesIO
 from config import Configuration as conf
+import os
+import glob
+from tempfile import NamedTemporaryFile
 
-
+image_path = 'datamodels/static/images/gan'
 gan = Blueprint('gan', __name__, template_folder='templates', static_folder='static')
 
 def crop_and_resize(image):
@@ -73,21 +76,19 @@ def index():
 
 @gan.route('/show_image/<string:generated>.jpeg', methods=['POST','GET'])
 def show_image(generated):
-    _b = BytesIO()
+    gan_images = glob.glob(os.path.abspath(os.path.join(image_path, 'gan_*')))
+    if len(gan_images) >= 100:
+        for f in gan_images[:-5]:
+            os.remove(f)
+    tf = NamedTemporaryFile(delete=False, suffix='.jpeg', prefix='gan_', dir=image_path)
     if generated == 'empty':
-        # image = Image.new(mode='RGB', size=(1, 1), color=(255,255,255))
         image = Image.new(mode='RGB', size=(256, 256), color=(255, 255, 255))
-        image.save(_b, format='JPEG', quality=100)
-        _b.seek(0)
+        image.save(tf, format='JPEG', quality=100)
     else:
         image = generated.replace("_", "/").replace("-", "+")
         image = f"{image}{'=' * ((4 - len(image) % 4) % 4)}"
         img_str_b = base64.b64decode(image)
         image = Image.open(BytesIO(img_str_b))
-        image.save(_b, format='JPEG', quality=100)
-        _b.seek(0)
-    return send_file(_b, mimetype='image/jpeg', cache_timeout=0)
+        image.save(tf, format='JPEG', quality=100)
+    return send_file(tf.name, mimetype='image/jpeg', cache_timeout=0)
 
-#@gan.route('/show_image', methods=['POST','GET'])
-#def show_image():
-#    return 'show_image'
