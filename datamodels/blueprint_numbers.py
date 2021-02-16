@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask import render_template
 from flask import request
+from flask import current_app
 from .static.empty_image import empty_image
 import base64
 from PIL import Image
@@ -8,7 +9,7 @@ from io import BytesIO
 import requests
 import numpy as np
 from requests.exceptions import ConnectionError, ConnectTimeout
-from config import Configuration as conf
+#from config import Configuration as conf
 
 #THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
 #numbers_model_path = os.path.join(THIS_FOLDER, 'static/model/numbers_model')
@@ -144,7 +145,7 @@ def draw():
 
         if img_str != empty_image:
             try:
-                r = requests.post('http://{}:8501/v1/models/mnist:predict'.format(conf.SERVER_ADDRESS),
+                r = requests.post('http://{}:8501/v1/models/mnist:predict'.format(current_app.config["SERVER_ADDRESS"]),
                                   json={"instances": [{"image": {"b64": img_str}}]})
                 a = r.json()['predictions'][0]
                 if a['probabilities'] < 75:

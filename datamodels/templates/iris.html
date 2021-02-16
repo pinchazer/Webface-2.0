@@ -1,16 +1,14 @@
 {% extends 'base_datamodels.html' %}
 
 {%block title %}
-    Flask App
+    DS model | Iris
 {% endblock %}
 
 {%block mainhead %}
     Iris model
 {% endblock %}
 
-{% block back %}
-  <a class="p-2 text-dark" href="{{url_for('index')}}">Main</a>
-{% endblock %}
+
 
 {% block author %}
   <a class="p-2 text-dark" href="{{url_for('author')}}">About author</a>
@@ -18,6 +16,12 @@
 
 {%block maintext %}
     Just type your parameters in the form below in cm and push <b>submit</b> button. Model will predict spices and show you the answer.
+    <br>Typical Sepal Length from 2.9 to 9.1
+    <br>Typical Sepal Width from 0.9 to 5.5
+    <br>Typical Petal Length from 0.3 to 8
+    <br>Typical Petal Width from 0.04 to 3.6
+
+
 {% endblock %}
 
 

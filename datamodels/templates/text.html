@@ -1,7 +1,7 @@
 {% extends 'base_datamodels.html' %}
 
 {%block title %}
-    Flask App
+    DS model | Text
 {% endblock %}
 
 {%block navbarname %}
@@ -12,8 +12,10 @@
     Text model
 {% endblock %}
 
-{% block back %}
-  <a class="p-2 text-dark" href="{{url_for('index')}}">Main</a>
+
+
+{% block author %}
+  <a class="p-2 text-dark" href="{{url_for('author')}}">About author</a>
 {% endblock %}
 
 {%block maintext %}

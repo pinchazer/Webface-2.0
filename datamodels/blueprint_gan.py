@@ -1,18 +1,19 @@
 from flask import Blueprint
-from flask import render_template, send_file
+from flask import render_template, send_from_directory
 from .form import UrlForm
+from flask import current_app
 from flask import request
 import requests
 from requests.exceptions import ConnectionError, ConnectTimeout
 from PIL import Image, UnidentifiedImageError
 import base64
 from io import BytesIO
-from config import Configuration as conf
+#from config import Configuration as conf
 import os
 import glob
 from tempfile import NamedTemporaryFile
 
-image_path = 'datamodels/static/images/gan'
+image_path = 'datamodels/gan_images'
 gan = Blueprint('gan', __name__, template_folder='templates', static_folder='static')
 
 def crop_and_resize(image):
@@ -30,12 +31,20 @@ def crop_and_resize(image):
         return image.resize((256, 256), resample=Image.LANCZOS)
 
 
-
+def save_image_to_file(image_b64_urlsafe):
+    tf = NamedTemporaryFile(delete=False, suffix='.jpeg', prefix='gan_', dir=image_path)
+    image = image_b64_urlsafe.replace("_", "/").replace("-", "+")
+    image = f"{image}{'=' * ((4 - len(image) % 4) % 4)}"
+    img_str_b = base64.b64decode(image)
+    image = Image.open(BytesIO(img_str_b))
+    image.save(tf, format='JPEG', quality=100)
+    _, filename = os.path.split(tf.name)
+    return filename
 
 @gan.route('/', methods=['POST', 'GET'])
 def index():
     form = UrlForm(request.form)
-    new_image = 'empty'
+    new_image = 'empty.jpeg'
     answer = ''
     if request.method == 'POST' and form.validate():
         url = form.urlfld.data
@@ -55,40 +64,28 @@ def index():
                 img_str_b = base64.b64encode(_b.getvalue())
                 _b.close()
                 img_str = img_str_b.decode('ascii')
-                r = requests.post('http://{}:8501/v1/models/cyclegan:predict'.format(conf.SERVER_ADDRESS),
+                r = requests.post('http://{}:8501/v1/models/cyclegan:predict'
+                                  .format(current_app.config["SERVER_ADDRESS"]),
                                   json={"instances": [{"image": {"b64": img_str}}]})
-                new_image = r.json()['predictions'][0]
+                image_b64_urlsafe = r.json()['predictions'][0]
+                new_image = save_image_to_file(image_b64_urlsafe)
             except UnidentifiedImageError:
                 answer = 'Not a picture'
-                new_image = 'empty'
             except KeyError:
                 answer = 'Tensorflow server respond: {}'.format(r.json())
-                new_image = 'empty'
             except OSError as e:
                 answer = '{}'.format(e)
-                new_image = 'empty'
             except (ConnectionError, ConnectTimeout):
-                new_image = 'empty'
                 answer = "Can't establish connection ;("
         else:
             answer = 'URL status_code {}'.format(r.status_code)
     return render_template('gan.html', answer=answer, image=new_image, form=form)
 
-@gan.route('/show_image/<string:generated>.jpeg', methods=['POST','GET'])
+@gan.route('/images/<string:generated>', methods=['POST','GET'])
 def show_image(generated):
     gan_images = glob.glob(os.path.abspath(os.path.join(image_path, 'gan_*')))
     if len(gan_images) >= 100:
         for f in gan_images[:-5]:
             os.remove(f)
-    tf = NamedTemporaryFile(delete=False, suffix='.jpeg', prefix='gan_', dir=image_path)
-    if generated == 'empty':
-        image = Image.new(mode='RGB', size=(256, 256), color=(255, 255, 255))
-        image.save(tf, format='JPEG', quality=100)
-    else:
-        image = generated.replace("_", "/").replace("-", "+")
-        image = f"{image}{'=' * ((4 - len(image) % 4) % 4)}"
-        img_str_b = base64.b64decode(image)
-        image = Image.open(BytesIO(img_str_b))
-        image.save(tf, format='JPEG', quality=100)
-    return send_file(tf.name, mimetype='image/jpeg', cache_timeout=0)
+    return send_from_directory(os.path.abspath(image_path), generated, mimetype='image/jpeg', cache_timeout=0)
 

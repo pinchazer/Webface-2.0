@@ -6,7 +6,8 @@ import requests
 from requests.exceptions import ConnectionError, ConnectTimeout
 import random
 import os
-from config import Configuration as conf
+from flask import current_app
+#from config import Configuration as conf
 
 THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
 iris_model_path = os.path.join(THIS_FOLDER, 'static/model/iris_KNN')
@@ -45,7 +46,8 @@ def index():
             if form.validate():
                 X = list(map(float, [form.sl.data, form.sw.data, form.pl.data, form.pw.data]))
                 try:
-                    r = requests.post('http://{}:5001/iris/predict'.format(conf.SERVER_ADDRESS), json={"features": X})
+                    r = requests.post('http://{}:5001/iris/predict'
+                                      .format(current_app.config["SERVER_ADDRESS"]), json={"features": X})
                     response = r.json()['p']
                 except (ConnectionError, ConnectTimeout):
                     response = "Can't establish connection ;("

@@ -1,7 +1,7 @@
 {% extends 'base_datamodels.html' %}
 
 {%block title %}
-    Flask App
+    DS model | Van Gogher
 {% endblock %}
 
 
@@ -11,12 +11,10 @@
 
 
 {%block maintext %}
-    Give me an URL of any picture and I will draw it in Van Gog style. I't better to have square picture.
+    Give me an URL of any picture and I will draw it in Van Gog style. It's better to have square picture.
 {% endblock %}
 
-{% block back %}
-    <a class="p-2 text-dark" href="{{url_for('index')}}">Main</a>
-{% endblock %}
+
 
 {% block author %}
     <a class="p-2 text-dark" href="{{url_for('author')}}">About author</a>
@@ -40,7 +38,11 @@
                 </div>
             </div>
                 <div class="row justify-content-center p-4 m-4">
+					{% if image == 'empty.jpeg' %}
+					<img src="static/images/empty.jpeg" alt="GENERATED_IMAGE">
+					{% else %}
                     <img src="{{ url_for('.show_image', generated=image) }}" alt="GENERATED_IMAGE">
+					{% endif %}
                 </div>
                 <div class="row justify-content-center p-4 m-4">
                     {{answer}}
